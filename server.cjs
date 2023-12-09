@@ -76,6 +76,30 @@ app.get('/item', async (req, res) => {
     }
 });
 
+// Endpoint for deleting an item by ID
+app.delete('/item/:id', async (req, res) => {
+    try {
+        const itemId = req.params.id;
+
+        // Validate if the provided ID is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(itemId)) {
+            return res.status(400).json({ error: 'Invalid item ID' });
+        }
+
+        // Attempt to find and remove the item
+        const deletedItem = await Item.findByIdAndDelete(itemId);
+
+        if (!deletedItem) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        res.json({ message: 'Item deleted successfully', deletedItem });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to delete item' });
+    }
+});
+
 app.get('/', (req, res) => {
     res.send('API for llaboooApp');
 });
