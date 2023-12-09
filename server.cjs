@@ -63,10 +63,10 @@ app.get('/item', async (req, res) => {
 
         const items = await Item.find(query);
 
-        // Format tanggal field in each item to DD-MM-YYYY
+        // Format tanggal field in each item to DD (only the day)
         const formattedItems = items.map(item => ({
             ...item._doc,
-            tanggal: new Date(item.tanggal).toLocaleDateString('id-ID')
+            tanggal: new Date(item.tanggal).getDate() // Get only the day part
         }));
 
         res.json(formattedItems);
@@ -75,7 +75,6 @@ app.get('/item', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch items' });
     }
 });
-
 
 app.get('/', (req, res) => {
     res.send('API for llaboooApp');
