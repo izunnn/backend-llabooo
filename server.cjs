@@ -100,6 +100,36 @@ app.delete('/item/:id', async (req, res) => {
     }
 });
 
+app.get('/weekly-expenses', async (req, res) => {
+    try {
+        const weeks = [[1, 7], [8, 14], [15, 21], [22, 28]];
+
+        const weeklyExpenses = await Promise.all(weeks.map(async (week) => {
+            const [startDay, endDay] = week;
+
+            const startDate = new Date(req.query.startDate);
+            const endDate = new Date(req.query.endDate);
+
+            const query = {
+                tanggal: {
+                    $gte: startDate,
+                    $lt: endDate
+                }
+            };
+
+            const items = await Item.find(query);
+            const totalExpense = items.reduce((sum, item) => sum + item.harga, 0);
+
+            return { week, totalExpense };
+        }));
+
+        res.json(weeklyExpenses);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch weekly expenses' });
+    }
+});
+
 app.get('/', (req, res) => {
     res.send('API for llaboooApp');
 });
