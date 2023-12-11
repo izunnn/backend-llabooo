@@ -130,6 +130,7 @@ app.get('/weekly-expenses', async (req, res) => {
     }
 });
 
+
 app.get('/', (req, res) => {
     res.send('API for llaboooApp');
 });
