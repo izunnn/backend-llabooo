@@ -6,7 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json()); // Parse JSON requests
+app.use(express.json());
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -129,6 +129,43 @@ app.get('/weekly-expenses', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch weekly expenses' });
     }
 });
+
+const menuSchema = new mongoose.Schema({
+    menu: String
+});
+
+const Menu = mongoose.model('Menu', menuSchema);
+
+app.post('/menu', async (req, res) => {
+    try {
+        const newMenu = new Menu(req.body);
+        const savedMenu = await newMenu.save();
+        res.json(savedMenu);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to add menu' });
+    }
+});
+
+app.get('/menu', async (req, res) => {
+    try {
+        const menus = await Menu.find();
+        res.json(menus);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to retrieve menus' });
+    }
+});
+
+app.delete('/menu/:id', async (req, res) => {
+    const menuId = req.params.id;
+  
+    try {
+      await Menu.findByIdAndDelete(menuId);
+      res.status(200).json({ message: 'Menu deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting menu:', error);
+      res.status(500).json({ error: 'Failed to delete menu' });
+    }
+  });
 
 
 app.get('/', (req, res) => {
