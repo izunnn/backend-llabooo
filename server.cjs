@@ -167,6 +167,46 @@ app.delete('/menu/:id', async (req, res) => {
     }
   });
 
+const tabunganSchema = new mongoose.Schema({
+    sisaBudget: Number,
+    month: Number,
+    year: Number
+});
+
+const Tabungan = mongoose.model('Tabungan', tabunganSchema);
+
+app.get('/tabungan', async (req, res) => {
+    try {
+        const tabunganData = await Tabungan.find();
+
+        res.json(tabunganData);
+    } catch (error) {
+        console.error('Failed to fetch tabungan data', error);
+        res.status(500).json({ error: 'Failed to fetch tabungan data' });
+    }
+});
+
+app.post('/tabungan', async (req, res) => {
+    try {
+        const { sisaBudget, month, year } = req.body;
+
+        const existingEntry = await Tabungan.findOne({ month, year });
+
+        if (existingEntry) {
+            existingEntry.sisaBudget = sisaBudget;
+            await existingEntry.save();
+        } else {
+            const newEntry = new Tabungan({ sisaBudget, month, year });
+            await newEntry.save();
+        }
+
+        res.json({ message: 'Sisa budget berhasil disimpan' });
+    } catch (error) {
+        console.error('Gagal menyimpan sisa budget', error);
+        res.status(500).json({ error: 'Failed to save sisa budget' });
+    }
+});
+
 
 app.get('/', (req, res) => {
     res.send('API for llaboooApp');
