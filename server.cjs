@@ -190,14 +190,16 @@ app.post('/tabungan', async (req, res) => {
     try {
         const { sisaBudget, month, year } = req.body;
 
-        const existingEntry = await Tabungan.findOne({ month, year });
+        if (sisaBudget !== 1200000) {
+            const existingEntry = await Tabungan.findOne({ month, year });
 
-        if (existingEntry) {
-            existingEntry.sisaBudget = sisaBudget;
-            await existingEntry.save();
-        } else {
-            const newEntry = new Tabungan({ sisaBudget, month, year });
-            await newEntry.save();
+            if (existingEntry) {
+                existingEntry.sisaBudget = sisaBudget;
+                await existingEntry.save();
+            } else {
+                const newEntry = new Tabungan({ sisaBudget, month, year });
+                await newEntry.save();
+            }
         }
 
         res.json({ message: 'Sisa budget berhasil disimpan' });
