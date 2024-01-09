@@ -209,6 +209,17 @@ app.post('/tabungan', async (req, res) => {
     }
 });
 
+app.delete('/tabungan/:id', async (req, res) => {
+    try {
+        const tabunganId = req.params.id;
+        await Tabungan.findByIdAndDelete(tabunganId);
+
+        res.json({ message: 'Data tabungan berhasil dihapus' });
+    } catch (error) {
+        console.error('Gagal menghapus data tabungan', error);
+        res.status(500).json({ error: 'Gagal menghapus data tabungan' });
+    }
+});
 
 app.get('/', (req, res) => {
     res.send('API for llaboooApp');
